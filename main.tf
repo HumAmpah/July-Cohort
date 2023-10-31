@@ -69,10 +69,18 @@ resource "aws_route_table_association" "private_subnet_association" {
   subnet_id      = aws_subnet.private_subnets[count.index].id
   route_table_id = aws_route_table.private_route_table.id
 }
+
+# Create Elastic IP Address
+resource "aws_eip" "H-ip" {
+  tags = {
+    Name = "H-ip"
+  }
+}
+
 # Create a NAT Gateway
 resource "aws_nat_gateway" "nat_gateway" {
-  allocation_id = "eipalloc-0f629f6ee745fc675" # Replace with your Elastic IP allocation ID
-  subnet_id     = aws_subnet.public_subnets[0].id # Choose one of the public subnets
+  allocation_id = "aws_eip.H-ip"
+  subnet_id     = aws_subnet.public_subnets[0].id
 }
 
 # Associate NAT Gateway with private route table
